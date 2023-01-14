@@ -31,10 +31,8 @@
 #define _LOCKED_COLOR 255,255,255
 
 // For iteration 
-uint8_t layers[]={_BL,_FL,_ML,_SL};
-uint8_t lcolors[][3]={{_BL_RGB},{_FL_RGB},{_ML_RGB},{_LOCKED_COLOR}};
-uint8_t SLButtons[]={18,19,20,80,81};
-uint8_t SLcolors[][3]={{_BL_RGB},{_FL_RGB},{_ML_RGB},{0,255,0},{255,0,0}};
+uint8_t SLButtons[]={18,19,20,80,81,13};
+uint8_t SLcolors[][3]={{_BL_RGB},{_FL_RGB},{_ML_RGB},{0,255,0},{255,0,0},{255,0,0}};
 //Macro Keycodes (if needed)
 // enum custom_keycodes{
 //   SAMPLE = SAFE_RANGE, //SAMPLE
@@ -92,20 +90,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //   KC_TRNS,  KC_TRNS,  KC_TRNS,                      KC_TRNS,                                KC_TRNS,  MO(_SL),  KC_TRNS,  KC_TRNS,   KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS)
 };
 
+/**
+ * Change Color depending on active Layer.
+*/
 void colorCheck(void){
-  for(uint8_t i = 0; i<(sizeof(layers)/sizeof(layers[0]));++i){
-    if(IS_LAYER_ON(layers[i])){
-      rgb_matrix_set_color_all(lcolors[i][0],lcolors[i][1],lcolors[i][2]);
+  switch(get_highest_layer(layer_state)){
+    case _BL: rgb_matrix_set_color_all(_BL_RGB);break;
+    case _FL: rgb_matrix_set_color_all(_FL_RGB);break;
+    case _ML: rgb_matrix_set_color_all(_ML_RGB);break;
+    case _SL: 
+      rgb_matrix_set_color_all(_LOCKED_COLOR);
+      if(IS_LAYER_ON(_SL)){
+      for(uint8_t i=0; i<(sizeof(SLButtons)/sizeof(SLButtons[0]));++i){
+        rgb_matrix_set_color(SLButtons[i],SLcolors[i][0],SLcolors[i][1],SLcolors[i][2]);
+      }
+      }
       break;
-    }
-  }
-  if(IS_LAYER_ON(_SL)){
-    for(uint8_t i=0; i<(sizeof(SLButtons)/sizeof(SLButtons[0]));++i){
-      rgb_matrix_set_color(SLButtons[i],SLcolors[i][0],SLcolors[i][1],SLcolors[i][2]);
-    }
   }
 }
 
+/**
+ * Main Color changing method
+*/
 bool rgb_matrix_indicators_kb(void) {
   if(!rgb_matrix_indicators_user()){return false;}
   colorCheck();
