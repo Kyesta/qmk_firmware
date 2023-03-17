@@ -15,6 +15,8 @@ RGB_MATRIX_DRIVER = AW20216  # Enable RGB matrix effects.
 EEPROM_DRIVER = wear_leveling
 WEAR_LEVELING_DRIVER = spi_flash
 
+DEBOUNCE_TYPE = asym_eager_defer_pk
+
 #Custom
 SRC += features/mouse_turbo_click.c
 
